@@ -1,6 +1,6 @@
 # AiTM Phishing vs. FIDO2 Passkeys — Lab Report
 
-A hands-on lab demonstrating how Adversary-in-the-Middle (AiTM) reverse-proxy phishing bypasses traditional MFA (OTP/push) against a real Microsoft Entra ID tenant — and how switching the account to a FIDO2 passkey stops the same attack at the protocol level.
+A hands-on lab demonstrating how Adversary-in-the-Middle (AiTM) reverse-proxy phishing bypasses traditional MFA (OTP/push) against a real Microsoft Entra ID tenant and how switching the account to a FIDO2 passkey stops the same attack at the protocol level.
 
 > **Scope and ethics:** Everything here ran inside an isolated lab network against a synthetic Microsoft Entra ID tenant and a throwaway test account created solely for this exercise. No real users, production systems, or third parties were involved. This repo is for educational and portfolio purposes only.
 
@@ -14,13 +14,13 @@ A hands-on lab demonstrating how Adversary-in-the-Middle (AiTM) reverse-proxy ph
 | Session cookie issued | `ESTSAUTH` captured | None captured |
 | Account takeover | **Achieved** | **Prevented** |
 
-The two experiments used the identical phishing domain, certificate trust chain, and Evilginx2 phishlet. The only variable was the authentication method registered on the test account — which isolates the result to the authentication method itself.
+The two experiments used the identical phishing domain, certificate trust chain, and Evilginx2 phishlet. The only variable was the authentication method registered on the test account  which isolates the result to the authentication method itself.
 
 ## Why
 
-OTP and push MFA prove *who* is signing in, not *where* the request is terminating. A reverse proxy (Evilginx2) sits transparently between the victim and the real identity provider, relaying every request and response — including the genuine MFA challenge — so the victim approves a sign-in that looks completely normal. Once approved, the resulting session cookie is captured and replayed, bypassing both the password and the MFA step entirely.
+Traditional OTP and push-based MFA verify the user's identity but do not verify whether the authentication request is reaching the legitimate identity provider. A reverse proxy such as Evilginx2 can position itself between the victim and the real identity provider, transparently forwarding authentication requests and MFA challenges. This allows the victim to approve a seemingly legitimate sign-in, after which the attacker can capture and replay the resulting session cookie to gain access without repeating the password or MFA process.
 
-FIDO2/WebAuthn closes this gap with **origin binding**: the browser signs the authentication challenge together with the actual page origin it's talking to. A proxy can relay bytes, but it can't make the browser believe it's talking to `login.microsoftonline.com` when the address bar reads something else — so the ceremony fails before any token is ever issued.
+FIDO2/WebAuthn addresses this weakness through origin binding. The browser incorporates the actual website origin into the authentication process, ensuring that the passkey is used only with the domain to which it is registered. Although a proxy can relay authentication requests, it cannot change the origin verified by the browser. As a result, authentication through an unauthorised phishing domain fails, preventing the attacker from obtaining an authenticated session through this method.
 
 ## Lab environment
 
@@ -54,13 +54,6 @@ FIDO2/WebAuthn closes this gap with **origin binding**: the browser signs the au
 
 All 17 screenshots are in [`/evidence`](evidence), numbered to match the figure references in the full report.
 
-## Recommendations
-
-- Require FIDO2 hardware keys or platform passkeys as the primary authentication factor, especially for privileged accounts.
-- Enforce phishing-resistant authentication strength through Conditional Access rather than leaving it optional.
-- Enable Continuous Access Evaluation (CAE) to shrink the usefulness window of any stolen session token.
-- Apply token-protection and sign-in risk policies as a layer of defense while rolling out passkeys.
-- Train users to check the address bar domain — the one layer of this attack that isn't closed by a technical control.
 
 ## Full report
 
@@ -70,7 +63,6 @@ The complete write-up — background, lab setup, full experiment walkthroughs, s
 
 - [Evilginx2](https://github.com/kgretzky/evilginx2) — reverse-proxy phishing framework
 - Microsoft Entra ID (free tenant)
-- FIDO2/WebAuthn passkeys
 
 ## License
 
