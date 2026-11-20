@@ -57,11 +57,11 @@ All 17 screenshots are in [`/evidence`](evidence), numbered to match the figure 
 
 ## Full report
 
-The complete write-up — background, lab setup, full experiment walkthroughs, security analysis, and references — is in [`/report`](report/AiTM_Phishing_vs_FIDO2_Passkeys_Lab_Report.docx).
+The complete write-up, background, lab setup, full experiment walkthroughs, security analysis is in [`/report`](report/AiTM_Phishing_vs_FIDO2_Passkeys_Lab_Report.docx).
 
 ## Tools used
 
-- [Evilginx2](https://github.com/kgretzky/evilginx2) — reverse-proxy phishing framework
+- [Evilginx2](https://github.com/kgretzky/evilginx2) 
 - Microsoft Entra ID (free tenant)
 
 ## License
